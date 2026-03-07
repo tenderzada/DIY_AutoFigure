@@ -89,6 +89,7 @@
         reference_image_path: uploadedReferencePath,
         sam_backend: $("samBackend").value,
         sam_api_key: $("samApiKey").value.trim() || null,
+        skip_rmbg: $("skipRmbg").checked,
       };
       if (payload.sam_backend === "local") {
         payload.sam_api_key = null;

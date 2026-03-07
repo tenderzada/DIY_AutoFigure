@@ -84,6 +84,7 @@ class RunRequest(BaseModel):
     merge_threshold: Optional[float] = None
     optimize_iterations: Optional[int] = None
     reference_image_path: Optional[str] = None
+    skip_rmbg: Optional[bool] = False
 
 
 app = FastAPI()
@@ -140,6 +141,8 @@ def run_job(req: RunRequest) -> JSONResponse:
         cmd += ["--sam_max_masks", str(req.sam_max_masks)]
     if req.optimize_iterations is not None:
         cmd += ["--optimize_iterations", str(req.optimize_iterations)]
+    if req.skip_rmbg:
+        cmd += ["--skip_rmbg"]
 
     reference_path = req.reference_image_path
     if reference_path:

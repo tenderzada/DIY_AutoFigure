@@ -1527,6 +1527,7 @@ def crop_and_remove_background(
     boxlib_path: str,
     output_dir: str,
     rmbg_model_path: Optional[str] = None,
+    skip_rmbg: bool = False,
 ) -> list[dict]:
     """
     根据 boxlib.json 裁切图片并使用 RMBG2 去背景
@@ -1551,7 +1552,9 @@ def crop_and_remove_background(
         print("警告: 没有检测到有效的 box")
         return []
 
-    remover = BriaRMBG2Remover(model_path=rmbg_model_path, output_dir=icons_dir)
+    remover = None if skip_rmbg else BriaRMBG2Remover(model_path=rmbg_model_path, output_dir=icons_dir)
+    if skip_rmbg:
+        print("跳过 RMBG 去背景，直接使用裁切图")
 
     icon_infos = []
     for box_info in boxes:
@@ -1566,7 +1569,10 @@ def crop_and_remove_background(
         crop_path = icons_dir / f"icon_{label_clean}.png"
         cropped.save(crop_path)
 
-        nobg_path = remover.remove_background(cropped, f"icon_{label_clean}")
+        if skip_rmbg:
+            nobg_path = str(crop_path)
+        else:
+            nobg_path = remover.remove_background(cropped, f"icon_{label_clean}")
 
         icon_infos.append({
             "id": box_id,
@@ -2401,6 +2407,7 @@ def method_to_svg(
     sam_api_key: Optional[str] = None,
     sam_max_masks: int = 32,
     rmbg_model_path: Optional[str] = None,
+    skip_rmbg: bool = False,
     stop_after: int = 5,
     placeholder_mode: PlaceholderMode = "label",
     optimize_iterations: int = 2,
@@ -2538,6 +2545,7 @@ def method_to_svg(
         boxlib_path=boxlib_path,
         output_dir=str(output_dir),
         rmbg_model_path=rmbg_model_path,
+        skip_rmbg=skip_rmbg,
     )
 
     if stop_after == 3:
@@ -2719,6 +2727,7 @@ if __name__ == "__main__":
 
     # RMBG 参数
     parser.add_argument("--rmbg_model_path", default=None, help="RMBG 模型本地路径（可选）")
+    parser.add_argument("--skip_rmbg", action="store_true", help="跳过 RMBG 去背景步骤，直接使用裁切图")
 
     # 流程控制参数
     parser.add_argument(
@@ -2786,6 +2795,7 @@ if __name__ == "__main__":
         sam_api_key=args.sam_api_key,
         sam_max_masks=args.sam_max_masks,
         rmbg_model_path=args.rmbg_model_path,
+        skip_rmbg=args.skip_rmbg,
         stop_after=args.stop_after,
         placeholder_mode=args.placeholder_mode,
         optimize_iterations=args.optimize_iterations,
