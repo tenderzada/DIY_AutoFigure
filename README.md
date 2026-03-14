@@ -47,16 +47,10 @@
 conda create -n autofigure python=3.14 -y
 conda activate autofigure
 
-# 克隆项目并安装依赖（torch 默认安装 CPU 版本）
-git clone https://github.com/tenderzada/DIY_AutoFigure.git
+# 解压项目压缩包并进入目录
 cd DIY_AutoFigure
 pip install -r requirements.txt
 ```
-
-> **需要 GPU 加速？** 在 `pip install -r requirements.txt` 之前先单独安装 GPU 版 PyTorch：
-> ```bash
-> pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-> ```
 
 ### 第 2 步：准备 API Key
 
