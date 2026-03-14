@@ -48,6 +48,27 @@ cd DIY_AutoFigure
 pip install -r requirements.txt
 ```
 
+#### 推荐：使用 conda 虚拟环境
+
+```bash
+# 创建并激活环境
+conda create -n autofigure python=3.10 -y
+conda activate autofigure
+
+# 安装 PyTorch（根据 GPU 情况二选一）
+# 有 NVIDIA GPU：
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# 仅 CPU：
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# 克隆项目并安装依赖
+git clone https://github.com/tenderzada/DIY_AutoFigure.git
+cd DIY_AutoFigure
+pip install -r requirements.txt
+```
+
+> **注意**：如果系统中存在用户级 Python 包（`%APPDATA%\Python`），可能会干扰 conda 环境。遇到导入错误时，请设置环境变量 `set PYTHONNOUSERSITE=1` 后再运行。
+
 ### 第 2 步：准备 API Key
 
 本项目需要两个 API Key：
