@@ -43,31 +43,20 @@
 ### 第 1 步：安装依赖
 
 ```bash
-git clone https://github.com/tenderzada/DIY_AutoFigure.git
-cd DIY_AutoFigure
-pip install -r requirements.txt
-```
-
-#### 推荐：使用 conda 虚拟环境
-
-```bash
-# 创建并激活环境
-conda create -n autofigure python=3.10 -y
+# 创建并激活 conda 环境
+conda create -n autofigure python=3.14 -y
 conda activate autofigure
 
-# 安装 PyTorch（根据 GPU 情况二选一）
-# 有 NVIDIA GPU：
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-# 仅 CPU：
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-
-# 克隆项目并安装依赖
+# 克隆项目并安装依赖（torch 默认安装 CPU 版本）
 git clone https://github.com/tenderzada/DIY_AutoFigure.git
 cd DIY_AutoFigure
 pip install -r requirements.txt
 ```
 
-> **注意**：如果系统中存在用户级 Python 包（`%APPDATA%\Python`），可能会干扰 conda 环境。遇到导入错误时，请设置环境变量 `set PYTHONNOUSERSITE=1` 后再运行。
+> **需要 GPU 加速？** 在 `pip install -r requirements.txt` 之前先单独安装 GPU 版 PyTorch：
+> ```bash
+> pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+> ```
 
 ### 第 2 步：准备 API Key
 
