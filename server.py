@@ -85,6 +85,7 @@ class RunRequest(BaseModel):
     optimize_iterations: Optional[int] = None
     reference_image_path: Optional[str] = None
     skip_rmbg: Optional[bool] = False
+    draw_only: Optional[bool] = False
 
 
 app = FastAPI()
@@ -143,6 +144,8 @@ def run_job(req: RunRequest) -> JSONResponse:
         cmd += ["--optimize_iterations", str(req.optimize_iterations)]
     if req.skip_rmbg:
         cmd += ["--skip_rmbg"]
+    if req.draw_only:
+        cmd += ["--stop_after", "1"]
 
     reference_path = req.reference_image_path
     if reference_path:

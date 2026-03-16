@@ -20,6 +20,11 @@
     const samBackend = $("samBackend");
     const samApiKeyGroup = $("samApiKeyGroup");
     const samApiKeyInput = $("samApiKey");
+    const drawOnlyCheckbox = $("drawOnly");
+    const skipRmbgCheckbox = $("skipRmbg");
+    const samBackendGroup = samBackend ? samBackend.closest(".field-group") : null;
+    const skipRmbgGroup = skipRmbgCheckbox ? skipRmbgCheckbox.closest(".field-group") : null;
+    const optimizeGroup = $("optimizeIterations") ? $("optimizeIterations").closest(".field-group") : null;
     let uploadedReferencePath = null;
 
     function syncSamApiKeyVisibility() {
@@ -34,9 +39,23 @@
       }
     }
 
+    function syncDrawOnlyVisibility() {
+      const isDrawOnly = drawOnlyCheckbox && drawOnlyCheckbox.checked;
+      if (samBackendGroup) samBackendGroup.hidden = isDrawOnly;
+      if (samApiKeyGroup) samApiKeyGroup.hidden = isDrawOnly;
+      if (skipRmbgGroup) skipRmbgGroup.hidden = isDrawOnly;
+      if (optimizeGroup) optimizeGroup.hidden = isDrawOnly;
+      if (!isDrawOnly) syncSamApiKeyVisibility();
+    }
+
     if (samBackend) {
       samBackend.addEventListener("change", syncSamApiKeyVisibility);
       syncSamApiKeyVisibility();
+    }
+
+    if (drawOnlyCheckbox) {
+      drawOnlyCheckbox.addEventListener("change", syncDrawOnlyVisibility);
+      syncDrawOnlyVisibility();
     }
 
     if (uploadZone && referenceFile) {
@@ -90,6 +109,7 @@
         sam_backend: $("samBackend").value,
         sam_api_key: $("samApiKey").value.trim() || null,
         skip_rmbg: $("skipRmbg").checked,
+        draw_only: $("drawOnly").checked,
       };
       if (payload.sam_backend === "local") {
         payload.sam_api_key = null;
@@ -108,7 +128,8 @@
         }
 
         const data = await response.json();
-        window.location.href = `/canvas.html?job=${encodeURIComponent(data.job_id)}`;
+        const drawOnly = $("drawOnly").checked;
+        window.location.href = `/canvas.html?job=${encodeURIComponent(data.job_id)}${drawOnly ? "&draw_only=1" : ""}`;
       } catch (err) {
         errorMsg.textContent = err.message || "Failed to start job";
         confirmBtn.disabled = false;
@@ -158,6 +179,7 @@
   async function initCanvasPage() {
     const params = new URLSearchParams(window.location.search);
     const jobId = params.get("job");
+    const isDrawOnly = params.get("draw_only") === "1";
     const statusText = $("statusText");
     const jobIdEl = $("jobId");
     const artifactPanel = $("artifactPanel");
@@ -244,7 +266,8 @@
 
       if (stepMap[data.kind] && stepMap[data.kind].step > currentStep) {
         currentStep = stepMap[data.kind].step;
-        statusText.textContent = `Step ${currentStep}/5 - ${stepMap[data.kind].label}`;
+        const totalSteps = isDrawOnly ? 1 : 5;
+        statusText.textContent = `Step ${currentStep}/${totalSteps} - ${stepMap[data.kind].label}`;
       }
     });
 
