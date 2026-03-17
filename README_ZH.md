@@ -18,22 +18,25 @@
 
 原项目在 pipeline 第 3 步强制依赖 HuggingFace 上的 `briaai/RMBG-2.0` 模型（需要申请访问权限 + 稳定访问 HuggingFace），在国内环境下经常遇到网络问题导致整个流程失败。
 
-本仓库新增了 **Skip RMBG** 功能，允许跳过去背景步骤，直接使用裁切的原图嵌入 SVG，让整个流程无需 HuggingFace 即可顺利跑通。
+本仓库新增了以下功能：
+
+- **Draw Only 模式**：仅生成学术图片（Step 1），跳过分割、去背景、SVG 生成等后续步骤。适合只需要快速出图、不需要 SVG 编辑的场景。
+- **Skip RMBG**：跳过去背景步骤，直接使用裁切的原图嵌入 SVG，无需 HuggingFace 即可顺利跑通。
 
 <div align="center">
   <img src="img/DIY.png" width="100%" alt="DIY 修改展示"/>
   <br>
-  <em>Web 界面中新增的 Skip RMBG 选项</em>
+  <em>Web 界面中新增的 Draw Only 和 Skip RMBG 选项</em>
 </div>
 
 ### 修改文件一览
 
 | 文件 | 修改内容 |
 |:---|:---|
-| `autofigure2.py` | 新增 `--skip_rmbg` CLI 参数；启用后跳过 RMBG-2.0，直接使用裁切图 |
-| `server.py` | 后端 API 支持 `skip_rmbg` 字段并传递给子进程 |
-| `web/index.html` | 设置面板新增 "Skip RMBG" 复选框 |
-| `web/app.js` | 前端请求中携带 `skip_rmbg` 字段 |
+| `autofigure2.py` | 新增 `--skip_rmbg`、`--stop_after` CLI 参数 |
+| `server.py` | 后端 API 支持 `skip_rmbg`、`draw_only` 字段并传递给子进程 |
+| `web/index.html` | 设置面板新增 "Draw Only" 和 "Skip RMBG" 复选框 |
+| `web/app.js` | 前端 Draw Only 逻辑：隐藏无关选项、传递参数、调整步骤显示 |
 | `.gitignore` | 新增，忽略缓存和输出目录 |
 
 ---
@@ -70,7 +73,8 @@ python server.py
 3. **SAM3 Backend** 选择 `Roboflow API`
 4. **SAM3 API Key** 填入你的 Roboflow API Key
 5. **勾选 Skip RMBG**（跳过去背景，避免 HuggingFace 访问问题）
-6. 左侧粘贴论文方法文本，点击 **Confirm -> Canvas** 开始生成
+6. 如果只需生成图片不需要 SVG 编辑，可勾选 **Draw Only**
+7. 左侧粘贴论文方法文本，点击 **Confirm -> Canvas** 开始生成
 
 ---
 
@@ -84,7 +88,8 @@ python autofigure2.py \
   --api_key "sk-or-v1-xxx" \
   --sam_backend roboflow \
   --sam_api_key "your-roboflow-key" \
-  --skip_rmbg
+  --skip_rmbg \
+  --stop_after 1   # 仅绘图模式，只执行 Step 1
 ```
 
 ---
