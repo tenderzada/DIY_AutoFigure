@@ -22,6 +22,7 @@
     const samApiKeyInput = $("samApiKey");
     const drawOnlyCheckbox = $("drawOnly");
     const skipRmbgCheckbox = $("skipRmbg");
+    const imageModelGroup = $("imageModelGroup");
     const samBackendGroup = samBackend ? samBackend.closest(".field-group") : null;
     const skipRmbgGroup = skipRmbgCheckbox ? skipRmbgCheckbox.closest(".field-group") : null;
     const optimizeGroup = $("optimizeIterations") ? $("optimizeIterations").closest(".field-group") : null;
@@ -41,6 +42,7 @@
 
     function syncDrawOnlyVisibility() {
       const isDrawOnly = drawOnlyCheckbox && drawOnlyCheckbox.checked;
+      if (imageModelGroup) imageModelGroup.hidden = !isDrawOnly;
       if (samBackendGroup) samBackendGroup.hidden = isDrawOnly;
       if (samApiKeyGroup) samApiKeyGroup.hidden = isDrawOnly;
       if (skipRmbgGroup) skipRmbgGroup.hidden = isDrawOnly;
@@ -110,6 +112,7 @@
         sam_api_key: $("samApiKey").value.trim() || null,
         skip_rmbg: $("skipRmbg").checked,
         draw_only: $("drawOnly").checked,
+        image_model: $("imageModel").value || null,
       };
       if (payload.sam_backend === "local") {
         payload.sam_api_key = null;
